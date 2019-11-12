@@ -4,10 +4,8 @@ FSJS project 2 - List Filter and Pagination
 ******************************************/
   
 // Programmed by Jonathan Lutz, November 2019
-
 // /*** 
 // Creating the global variables.
-// ***/
 const lis = document.getElementsByClassName("student-item cf");
 const header = document.getElementsByClassName("page-header cf")[0]
 const parentDiv = document.querySelector(".page");
@@ -16,10 +14,9 @@ const numToShow = 10;
 let matchList = document.getElementsByClassName('match')
 let aTags = document.getElementsByTagName('a')
 let matches = document.getElementsByClassName('match')
+// let pagination = document.querySelector(".pagination")
 
-/*** 
-  Creating the ShowPage function
-***/
+ // Creating the ShowPage function
 function showPage(list,page) {
   let startIndex = (page * numToShow) - numToShow;
   let endIndex = (page * numToShow);
@@ -58,7 +55,7 @@ function appendPageLinks(list) {
 // Calling the function to append the page links
 appendPageLinks(lis);
 
-// defining the link click listener callback function
+// defining the page link click listener callback function
 function clickedLink(e){
 let aTags = document.getElementsByTagName("a");
   for(let i = 0; i < aTags.length; i++) {
@@ -101,49 +98,78 @@ function searchFunction(searchInput, names) {
   }
 }
 
-// Search Event Listeners
+//This function displays only the most recently created pagination links
+function resetPageLinks() {
+      let pagination = document.getElementById('pagination')
+    let uls = document.querySelectorAll('.pagination ul')
+    for (let i = 0; i < uls.length; i++){
+    uls[i].style.display = 'none';
+    let lastUl = document.querySelector(('.pagination ul:last-child'))
+    lastUl.style.display = '';
+    let active = document.querySelector('.pagination ul:last-child a')
+    active.className = 'active'; 
+}
+}
+
+// Search Event Listeners (click)
 button.addEventListener('click', (event) => {
   event.preventDefault(); 
+  if(input.value === ''){
+    appendPageLinks(lis)
+    showResults(lis,1)
+  
+  } else {
   searchFunction(search, names)
+  newDiv.style.display = '';
+  div.style.display = "none";
+  appendPageLinks(matchList)
   showResults(matchList,1)
+}
+});
+// Search Event Listeners (keyup)
+input.addEventListener('keyup', () => {
+  event.preventDefault();
+  if(input.value.length === 0){
+    showPage(lis,1)
+    appendPageLinks(lis)
+    resetPageLinks();
+} else {
+  searchFunction(search, names)
+  newDiv.style.display = '';
+  div.style.display = "none";
+  appendPageLinks(matchList)
+  showResults(matchList,1)
+}
 });
 
-input.addEventListener('keyup', () => {
-  event.preventDefault(); 
-  searchFunction(search, names)
-  showResults(matchList,1)
-});
-// This function displays the search results.
+ // This creates a "no matches found div"  and saves it to variable "div"
+const div = document.createElement("div");
+      div.className = "no-match";
+      div.textContent = "No matches were found";
+      div.style.margin = "20px";
+      div.style.textAlign = "center";
+      div.style.padding = "75px";
+      div.style.display = "none";
+      header.insertBefore(div,null);
+//This function displays the search results if there is a match, and "no matches found" if no matches.
   function showResults(list, page) {
     let startIndex = (page * numToShow) - numToShow;
     let endIndex = (page * numToShow);
     for(let i=0; i < lis.length; i++){
     lis[i].style.display = 'none';
     }
-    // This creates a "no matches found" div if there are no matches for the search.
-    if(matchList.length === 0){
-      const div = document.createElement("div");
-      div.className = "no-match";
-      div.textContent = "No matches were found";
-      div.style.margin = "20px";
-      div.style.textAlign = "center";
-      div.style.padding = "75px";  
-      header.insertBefore(div,null);
-      // Sets the correct page link to "active" class
+// Turns off the display of the pagination links 
+// and turns on the display of the "no matches found" div if there are no search results     
+      if(matchList.length === 0){
+      newDiv.style.display = "none"
+      div.style.display = '';
     } else {
       showPage(matchList,1)
-      appendPageLinks(matchList);
-      let pagination = document.getElementById('pagination')
-      let uls = document.querySelectorAll('.pagination ul')
-      for (let i = 0; i < uls.length; i++){
-      uls[i].style.display = 'none';
-      let lastUl = document.querySelector(('.pagination ul:last-child'))
-      lastUl.style.display = '';
-      let active = document.querySelector('.pagination ul:last-child a')
-      active.className = 'active'; 
+      resetPageLinks()
       }
     }
-  }
+  
+  
 
 
 
